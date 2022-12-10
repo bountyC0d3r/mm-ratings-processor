@@ -3,8 +3,11 @@
  */
 const _ = require('lodash')
 const config = require('config')
+const fs = require('fs')
 const request = require('superagent')
+const parseString = require("xml2js").parseString
 const prefix = require('superagent-prefix')
+const xml2js = require("xml2js");
 
 const logger = require('./logger')
 const m2mAuth = require('tc-core-library-js').auth.m2m
@@ -18,8 +21,6 @@ const m2m = m2mAuth(
  * @returns {Promise}
  */
 async function getM2Mtoken() {
-  logger.debug(config.AUTH0_CLIENT_ID)
-  logger.debug(config.AUTH0_CLIENT_SECRET)
   return m2m.getMachineToken(config.AUTH0_CLIENT_ID, config.AUTH0_CLIENT_SECRET)
 }
 
@@ -52,9 +53,7 @@ async function getChallengeDetails(queryParams) {
  */
 async function getSubmissions(challengeId) {
   const token = await getM2Mtoken()
-  logger.info(
-    `fetching submissions for a given challenge: ${challengeId}`
-  )
+  logger.info(`fetching submissions for a given challenge: ${challengeId}`)
 
   let allSubmissions = []
   let response = {}
@@ -87,8 +86,10 @@ async function getFinalSubmissions(submissions) {
   uniqMembers.forEach(memberId => {
     const memberSubmissions = _.filter(submissions, { memberId })
     const sortedSubs = _.sortBy(memberSubmissions, [function (i) { return new Date(i.created) }])
+    if (_.last(sortedSubs).hasOwnProperty('reviewSummation')) {
+      latestSubmissions.push(_.last(sortedSubs))
+    }
 
-    latestSubmissions.push(_.last(sortedSubs))
   })
 
   return latestSubmissions
@@ -125,10 +126,41 @@ function getKafkaOptions() {
   return options
 }
 
+/**
+ * Function to update `loadlong.xml` file
+ * @param {array} roundId
+ */
+async function updateLoadLongXML(roundId) {
+  try {
+    const data = fs.readFileSync('loadlongORG.xml', 'utf-8')
+    parseString(data, function (err, result) {
+      if (err) throw new Error(error)
+
+      let updateData = result
+      updateData.loadDefinition.sourcedb[0] = updateData.loadDefinition.sourcedb[0].replace('#{INFORMIXSERVER}', config.get('INFORMIX.HOST') + ':' + config.get('INFORMIX.PORT'))
+      updateData.loadDefinition.sourcedb[0] = updateData.loadDefinition.sourcedb[0].replace('#{INFORMIXPASSWORD}', config.get('INFORMIX.PASSWORD'))
+
+      updateData.loadDefinition.targetdb[0] = updateData.loadDefinition.targetdb[0].replace('#{DWWAREHOUSE}', config.get('DW.HOST') + ':' + config.get('DW.PORT'))
+      updateData.loadDefinition.targetdb[0] = updateData.loadDefinition.targetdb[0].replace('#{DWPASSWORD}', config.get('DW.PASSWORD'))
+
+      updateData.loadDefinition.load[0].parameterList[0].parameter[0]['$'].value = roundId.toString()
+
+      const builder = new xml2js.Builder();
+      const xml = builder.buildObject(updateData);
+
+      fs.writeFileSync('loadlong.xml', xml)
+    })
+  } catch (error) {
+    logger.logFullError(error)
+    throw new Error(error)
+  }
+}
+
 module.exports = {
   getM2Mtoken,
   getChallengeDetails,
   getSubmissions,
   getFinalSubmissions,
-  getKafkaOptions
+  getKafkaOptions,
+  updateLoadLongXML
 }

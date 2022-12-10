@@ -21,7 +21,6 @@ async function handle(message) {
           legacyId: message.payload.projectId
         })
 
-        logger.debug(challengeDetails.legacy.subTrack)
         if (challengeDetails.legacy.subTrack.toLowerCase() === 'develop_marathon_match') {
           await MrathonRatingsService.calculate(challengeDetails.id, challengeDetails.name)
         }

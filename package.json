@@ -12,15 +12,17 @@
     "bluebird": "^3.7.2",
     "config": "^3.3.8",
     "get-parameter-names": "^0.3.0",
-    "ifxnjs": "^8.0.1",
+    "ifxnjs": "^10.0.5",
     "joi": "^17.7.0",
     "lodash": "^4.17.21",
     "no-kafka": "^3.4.3",
+    "q": "^1.5.1",
     "superagent": "^8.0.3",
     "superagent-prefix": "0.0.2",
     "tc-core-library-js": "appirio-tech/tc-core-library-js.git#v2.6.4",
     "topcoder-healthcheck-dropin": "^1.0.3",
-    "winston": "^3.8.2"
+    "winston": "^3.8.2",
+    "xml2js": "^0.4.23"
   },
   "engines": {
     "node": "10.x"

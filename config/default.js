@@ -9,9 +9,9 @@ module.exports = {
   // kafka configs
   KAFKA_URL: process.env.KAFKA_URL || 'localhost:9092',
   KAFKA_CLIENT_CERT:
-    process.env.KAFKA_CLIENT_CERT || fileIfExists('./kafkadev.cert'),
+    process.env.KAFKA_CLIENT_CERT,
   KAFKA_CLIENT_CERT_KEY:
-    process.env.KAFKA_CLIENT_CERT_KEY || fileIfExists('./kafkadev.key'),
+    process.env.KAFKA_CLIENT_CERT_KEY,
   KAFKA_GROUP_ID:
     process.env.KAFKA_GROUP_ID || 'member-profile-processor-group-consumer',
 
@@ -40,5 +40,11 @@ module.exports = {
     DB_LOCALE: process.env.IFX_DB_LOCALE || 'en_US.57372',
     USER: process.env.IFX_USER || 'informix',
     PASSWORD: process.env.IFX_PASSWORD || '1nf0rm1x',
+  },
+
+  DW: {
+    HOST: process.env.DW_HOST || 'localhost',
+    PORT: process.env.DW_PORT || '2022',
+    PASSWORD: process.env.DW_PASSWORD || '1nf0rm1x',
   }
 }
