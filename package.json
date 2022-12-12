@@ -9,6 +9,7 @@
   "author": "Dushyant Bhalgami <bountyc0d3r@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.1272.0",
     "bluebird": "^3.7.2",
     "config": "^3.3.8",
     "get-parameter-names": "^0.3.0",

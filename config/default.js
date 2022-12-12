@@ -46,5 +46,11 @@ module.exports = {
     HOST: process.env.DW_HOST || 'localhost',
     PORT: process.env.DW_PORT || '2022',
     PASSWORD: process.env.DW_PASSWORD || '1nf0rm1x',
+  },
+
+  AWS: {
+    ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
+    SECRET: process.env.AWS_SECRET,
+    REGION: process.env.AWS_REGION,
   }
 }
